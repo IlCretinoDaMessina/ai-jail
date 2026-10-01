@@ -2,125 +2,108 @@
 
 ## Overview
 
-Build the installer in strict dependency order: a config-driven orchestrator with a hard exit-code contract first, then a dedicated WSL2 distro whose 050 isolation gate must pass before anything valuable installs, then the ai-jail toolchain with every relied-upon flag proven at install time, then per-tool jail wrappers through which opencode/ComfyUI are installed, then Windows-side hardening and maintenance, and finally the adversarial 900 suite that re-derives every isolation claim from the live system into an all-PASS `logs\REPORT.txt` — plus a C:-safe manual rollback. Fail-closed throughout: gates at 050/070/090 block subsequent phases; verification comes last.
+Build and verify a config-driven, fail-closed installer for a dedicated WSL2 distro, with isolated per-tool sandboxes, controlled network access, human-managed secrets, and an adversarial final verification suite. The original six-phase milestones remain the project scope. The operational status below reflects the work completed through 2026-10-01; it does not imply that unexecuted installer or final verification tests have passed.
+
+**Current execution point:** Phases 000–070 have been completed on the dedicated `ai-jail` distro. The three Phase 080 Option C wrappers have passed individual tests, but Phase 080 is **INCOMPLETE** until its installer and lifecycle tests pass. Phase 090 and later phases have not started.
+
+**Safety boundary for remaining work:** Do not rerun Phases 000–070, modify other WSL distros (including `docker-desktop`), edit global `.wslconfig`, re-enable automount or interop, or invoke `wsl --shutdown`. If restarting the dedicated distro is necessary, scope the operation to `wsl --terminate ai-jail` after explicit review. Never relax isolation to make an application install succeed.
 
 ## Phases
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+- [x] **Phase 1: Foundation & Orchestrator Contract** — `000-run-all`, `_common.bat`, preflight and the strict `0` / `1` / `3010` exit-code contract.
+- [x] **Phase 2: WSL2 Distro & Isolation Hard Gate** — dedicated distro and verified 050 isolation gate; preserve its accepted configuration.
+- [x] **Phase 3: Verified Jail Toolchain** — completed through 070; pinned ai-jail 2.2.0 and relied-upon flags verified.
+- [ ] **Phase 4: Jailed Workspaces & Per-Tool Installs** — Phase 080 wrapper testing completed; installer acceptance and Phase 090 installs remain.
+- [ ] **Phase 5: Hardening, Maintenance & Editor** — follow Phase 090; preserve optional feature flags and existing isolation.
+- [ ] **Phase 6: Adversarial Verification & Safe Rollback** — Phase 900 evidence and manual-only 999 rollback remain.
 
-Decimal phases appear between their surrounding integers in numeric order.
+## Ordering and hard gates
 
-- [x] **Phase 1: Foundation & Orchestrator Contract** - config-driven `000-run-all` (`/from`, `/skip`, stop-on-fail, summary table) plus shared `_common.bat` helpers and `010-preflight`
-- [ ] **Phase 2: WSL2 Distro & Isolation Hard Gate** - dedicated distro on the target drive with `wsl.conf` in effect and a 050 gate proving Windows drives unreachable before anything installs
-- [ ] **Phase 3: Verified Jail Toolchain** - Linux base packages + pinned ai-jail installed, with every relied-upon flag (`--allow-host`, `--dry-run`, GPU path) proven working
-- [ ] **Phase 4: Jailed Workspaces & Per-Tool Installs** - `jail-*` wrappers enforce per-tool allowlists, secrets invisibility and write confinement; opencode and ComfyUI installed through the jail
-- [ ] **Phase 5: Hardening, Maintenance & Editor** - passwordless sudo removed, weekly updates + backups scheduled, VS Code connected with Layer-1 warning, README.txt human steps documented
-- [ ] **Phase 6: Adversarial Verification & Safe Rollback** - `900-verify-all` proves every isolation claim into an all-PASS `logs\REPORT.txt`; manual-only, C:-safe `999` rollback
+1. The accepted 050 and 070 gates are prerequisites for 080. Preserve their evidence; do not rerun completed phases as a shortcut.
+2. Finish and accept 080 before beginning 090. A failed 080 check blocks 090 and later phases.
+3. Phase 090 must install tools inside the jail, with install-time network access separate from runtime per-tool allowlists. A failed 090 gate blocks subsequent phases.
+4. Complete applicable 100/110 hardening, maintenance, backup and human documentation work before final 900 acceptance.
+5. Run 900 against the live system, with positive controls and non-vacuous negative tests. Do not treat a report, marker file or earlier wrapper test as a substitute.
+6. `999-uninstall-rollback` is manual-only, requires confirmation, and is never called by the orchestrator. It must not touch C: user data.
+7. Network default-deny applies to processes launched through the wrappers; do not claim that an unsandboxed process in the WSL distro is itself network-isolated.
 
-## Ordering Constraints
+## Phase details and acceptance criteria
 
-Hard dependencies the plans must preserve:
+### Phase 1 — Foundation & Orchestrator Contract (complete)
 
-- 050 gate before anything installs — 060+ blocked until isolation is proven (fail-closed)
-- Hard gates at 050 (Phase 2), 070 (Phase 3), 090 (Phase 4) — a failed gate blocks all subsequent phases
-- 040 (`wsl.conf` written + `wsl --shutdown` applied) → 050 (gate verifies behavior) ordering within Phase 2
-- 060 AppArmor/userns fix → 070 ai-jail dry-run probe ordering within Phase 3
-- Verification (900/999) last — Phase 6 depends on everything it asserts
-- No phase between 050 and 080 may claim network default-deny (per-process: true only once a wrapper first execs)
+Config-driven `000-run-all` supports `/from` and `/skip`, stops on failure, handles `3010`, and summarizes attempted phases. `_common.bat` defines configuration loading, logging, classification and LF payload writing. Preserve the exact-match exit-code contract and capture error codes immediately.
 
-## Phase Details
+### Phase 2 — WSL2 Distro & Isolation Hard Gate (complete)
 
-### Phase 1: Foundation & Orchestrator Contract
-**Goal**: A config-driven, resumable orchestrator runs every phase in order under a strict exit-code contract — the trust foundation no later phase can be honest without.
-**Mode:** mvp
-**Depends on**: Nothing (first phase)
-**Requirements**: INS-01, INS-02, INS-03, INS-04, INS-05, INS-06, PLT-04
-**Success Criteria** (what must be TRUE):
-  1. `000-run-all` executes phases 010→900 in order, stops on the first failure, and prints a final summary table (phase / status / time) for every phase it attempted.
-  2. A user can resume an interrupted run with `/from NNN` or bypass a phase with `/skip NNN`; when any phase returns 3010, run-all pauses with a clear reboot + `/from` re-run message before stopping.
-  3. Every phase writes `logs\NNN-name.log` and returns only 0 (OK/skip), 1 (fatal), or 3010 (reboot); admin phases run without elevation abort with a clear, actionable message.
-  4. All drives, paths, usernames, allowlists and install flags come from `config.env` — changing `TARGET_DRIVE` or `LINUX_USER` requires no code edits — and Linux-side payloads emitted from bats contain no CRLF/BOM.
-**Plans**:
-- **Wave 1**: `01-01-PLAN.md` — config.env loading, `_common.bat` helpers, exit-code contract (0/1/3010 fail-closed), LF payload writer
-- **Wave 2** *(blocked on Wave 1 completion)*: `01-02-PLAN.md` — `000-run-all.bat` discovery loop, stop-on-fail, `/from`//`skip`, 3010 handling, summary table
-- **Wave 3** *(blocked on Wave 2 completion)*: `01-03-PLAN.md` — `_common.bat :require_admin`, `010-preflight.bat` checks, elevation e2e wiring
+The dedicated distro was established on the target drive and the 050 gate was completed. Preserve disabled drive automount, mountFsTab, interop and Windows PATH propagation. No global WSL settings or pre-existing distros are in scope. Historical phase plans may describe `wsl --shutdown`; it is prohibited in the current remaining-work procedure.
 
-Cross-cutting constraints: capture-first errorlevel + exact-match fail-closed exit-code classification (threat T-1-02) hold across all three plans.
+### Phase 3 — Verified Jail Toolchain (complete)
 
-### Phase 2: WSL2 Distro & Isolation Hard Gate
-**Goal**: A dedicated WSL2 distro on the configured drive exists with Windows drives, interop and Windows PATH fully severed — and a hard gate proves it before anything valuable installs.
-**Mode:** mvp
-**Depends on**: Phase 1
-**Requirements**: ISO-01, ISO-05, INS-07, PLT-01, PLT-02, PLT-05
-**Success Criteria** (what must be TRUE):
-  1. The distro exists with its vhdx physically at `%TARGET_DRIVE%\ai-jail\wsl\` (verified, no hardcoded `D:`), and `/etc/wsl.conf` is written exactly as specified and demonstrably in effect after `wsl --shutdown`.
-  2. In a fresh session the 050 gate observes: zero `drvfs` mounts (no `/mnt/c`, no `/mnt/d`), `cmd.exe`/`powershell.exe` not found, no `/mnt/*` in `$PATH`, and `whoami` = `LINUX_USER` (not root).
-  3. When the gate fails, 060+ refuse to run — nothing installs until isolation is proven — and no phase ever re-enables automount to "make something work"; the system fails instead.
-  4. Global `.wslconfig` and pre-existing distros are untouched — a pre-existing dev environment (e.g. Docker Desktop's distro) still works after the phase.
-**Plans**: TBD
+The Linux prerequisites and pinned ai-jail 2.2.0 were installed through 070. The relied-upon sandbox flags were individually probed. Preserve the accepted installation and avoid changes to earlier phase scripts.
 
-### Phase 3: Verified Jail Toolchain
-**Goal**: The Linux base and pinned ai-jail are installed behind the gate, with every CLI capability the plan depends on proven at install time rather than assumed.
-**Mode:** mvp
-**Depends on**: Phase 2
-**Requirements**: SBX-01, SBX-02, PLT-03
-**Success Criteria** (what must be TRUE):
-  1. All base packages (bubblewrap, git, curl, ca-certificates, build-essential, python3-venv/pip, pkg-config, jq, rustup, node LTS) are present, and the AppArmor/userns prerequisite is fixed so the 070 dry-run probe actually passes.
-  2. ai-jail is installed pinned (`cargo install --locked --version 2.2.0`) and `ai-jail --version`, `ai-jail --dry-run echo ok`, and a real non-dry `ai-jail true` all succeed.
-  3. `--allow-host` support is re-verified at install time; if any relied-upon flag is unsupported, the phase fails loudly with a proposed fallback (e.g. nftables/proxy allowlist) instead of silently continuing.
-  4. GPU passthrough status (`/usr/lib/wsl/lib`, `nvidia-smi`, `/dev/dxg` mapping fallback) is logged as warn-only — GPU trouble never fails the phase.
-**Plans**: TBD
+### Phase 4 — Jailed Workspaces & Per-Tool Installs (in progress)
 
-### Phase 4: Jailed Workspaces & Per-Tool Installs
-**Goal**: Every AI tool runs inside an ai-jail with its own project folder, hidden secrets and a per-tool network allowlist — and the tools themselves are installed *through* that jail.
-**Mode:** mvp
-**Depends on**: Phase 3
-**Requirements**: ISO-02, ISO-03, ISO-04, NET-01, NET-02, NET-03, NET-04, NET-06, NET-07, SBX-03, SBX-04, SBX-05
-**Success Criteria** (what must be TRUE):
-  1. `~/projects/{opencode-work,comfyui,scratch}` exist with git history; `~/.secrets` (chmod 700, outside the projects) is unreadable from inside any jail while readable outside (paired positive control); each wrapper injects only its own tool's API key at launch — the full secrets directory is never mounted into any jail.
-  2. From inside the respective jails: non-allowlisted hosts are unreachable, the opencode jail cannot reach ComfyUI's allowlisted hosts (and vice versa), `jail-shell` has zero network, and the Windows host/LAN IPs are unreachable — every deny paired with a positive control proving the path works when allowed.
-  3. A jailed tool cannot write outside its own project directory (write elsewhere fails; write inside the project succeeds).
-  4. opencode + GSD and ComfyUI (own venv, no custom nodes) are installed inside ai-jail with only `ALLOW_HOSTS_INSTALL` active, versions pinned to `~/projects/versions.txt`; ComfyUI binds `127.0.0.1` — reachable from the Windows browser at `localhost:8188`, unreachable from the LAN.
-  5. Config policy holds: per-tool allowlists live in `config.env`, the single `ALLOW_HOSTS` is gone, the install list is active only during installs, no wildcards (installer fails on `*`), and an empty list means no network.
-**Plans**: TBD
+**080 — Jailed workspaces and wrappers**
 
-### Phase 5: Hardening, Maintenance & Editor
-**Goal**: The installed system maintains itself and stays tight — privilege shortcuts removed, updates and backups automated, the editor connected honestly, humans documented.
-**Mode:** mvp
-**Depends on**: Phase 4
-**Requirements**: INS-09, SBX-06, MNT-01, MNT-02, MNT-03, MNT-04
-**Success Criteria** (what must be TRUE):
-  1. `sudo -n true` fails for `LINUX_USER` (all NOPASSWD entries gone) and `~/.secrets` permissions verify as chmod 700.
-  2. A weekly scheduled task exists and demonstrably runs `wsl --update` + apt upgrade (verified by an actual run + version diff, not just task creation).
-  3. `backup.bat` produces a dated `wsl --export` backup on the target drive.
-  4. When `INSTALL_VSCODE=1`, VS Code + the WSL extension connect to the distro with interop and automount disabled, and the Layer-1-only warning is printed; if it cannot connect, that limitation is documented — interop is never re-enabled to fix it.
-  5. `README.txt` documents every human-only step: password entry, API keys → `~/.secrets`, importing large models via `\\wsl$`, and vhdx size/compaction limits.
-**Plans**: TBD
+The operational state already contains `~/projects/{opencode-work,comfyui,scratch}`, initial Git history, `~/.secrets`, and three tested wrappers. The two tool environment files are reported empty and mode `0600`; wrappers are reported owned by `aijail:aijail` and mode `0700`. The Option C interface is:
 
-### Phase 6: Adversarial Verification & Safe Rollback
-**Goal**: `900-verify-all` proves every isolation claim from the live system with non-vacuous evidence, and a C:-safe manual rollback exists for teardown.
-**Mode:** mvp
-**Depends on**: Phase 5
-**Requirements**: NET-05, INS-08, VER-01, VER-02, VER-03
-**Success Criteria** (what must be TRUE):
-  1. 900 re-runs all 050 gate tests plus secrets invisibility, write confinement, per-jail network denial, cross-tool denial, host/LAN denial, `jail-shell` no-network, ComfyUI bind/reachability, and wrapper existence/versions — each derived from the live system, never from marker files.
-  2. Every deny test is preceded by a paired positive control that passes under the same timeout budget — no vacuous PASS (the DNS-less sandbox must not make deny tests pass for the wrong reason).
-  3. `logs\REPORT.txt` ends with ALL-PASS including cross-tool denial, host/LAN denial and the 050 gate; CDN-fragile hosts (huggingface.co, github.com) report WARN, never flaky FAIL.
-  4. `999-uninstall-rollback` runs only manually (confirm prompt, never invoked by run-all) and removes only `%TARGET_DRIVE%\ai-jail\` — C: user data untouched.
-**Plans**: TBD
+- No arguments: launch interactive Bash.
+- `-c COMMAND [ARG...]`: launch Bash with the supplied command and arguments.
+- `-- COMMAND [ARG...]`: execute the command directly.
+- Other forms: usage failure inside the wrapper; child exit codes propagate unchanged.
+
+All wrappers must use `--clean --no-save-config --private-home --hide-dotdir .secrets`, map only their own project for writing, and preserve the respective network and environment-file policies. `jail-shell` must remain offline. See `tests/phase-080-validation-report.md` for chronological wrapper evidence and exact final tested contents.
+
+**080 installer acceptance remains outstanding:**
+
+1. Produce corrected `080.bat` and, if retained, its companion `080-install.ps1` using `_common.bat` conventions. The earlier draft pair is rejected and must not be executed.
+2. Generate runtime allowlists from `config.env`, rejecting wildcards (`*`), malformed hostnames, empty list elements, whitespace, shell metacharacters and unsafe values before making changes. A wholly empty allowlist means `--no-network`. Keep `ALLOW_HOSTS_INSTALL` separate for 090 only.
+3. Validate the configured distro and Linux user, prerequisites, target file types, ownership and symlinks. Fail closed on invalid configuration, sandbox startup failure or unexpected return codes.
+4. Handle clean and partial installation without truncating or overwriting existing credentials, project data or Git history. Create new empty secret files securely, preserve existing secret contents, and enforce the intended permissions.
+5. Stage all generated wrappers, verify their contents and permissions, then deploy with a reviewed recovery/rollback procedure that cannot leave an unreported mixed state. Do not generate `.ai-jail` files in project worktrees.
+6. Test negative configuration cases before applying the complete installer. Test a fresh install in an appropriate disposable test state, then controlled application to the dedicated distro, idempotent rerun and partial-state recovery. Retest security properties after deployment.
+7. Log actual commands, expected and observed outcomes, exit codes, corrections and final hashes. Mark 080 complete only after all acceptance gates pass.
+
+**090 — Per-tool installation (not started):**
+
+Install OpenCode and ComfyUI only when their `INSTALL_*` flags enable them. Use the installation-specific allowlist only during jailed installation; retain project-local installation and version pinning in `~/projects/versions.txt`. ComfyUI uses its own virtual environment, no custom nodes by default, and binds `127.0.0.1`; verify Windows localhost access and LAN denial. Do not widen runtime allowlists or disable isolation to fix dependencies. The 090 gate requires real application startup under the intended jails.
+
+### Phase 5 — Hardening, Maintenance & Editor (not started)
+
+Complete applicable 100/110 work after 090: remove passwordless sudo; verify secret permissions; implement and actually verify scheduled maintenance; produce a dated target-drive backup; document password/API-key handling, model import and VHDX limits. `INSTALL_VSCODE=0` means the optional editor installation is skipped. If enabled later, document Layer-1 limitations and never restore interop or automount as a workaround.
+
+### Phase 6 — Adversarial Verification & Safe Rollback (not started)
+
+Implement and execute `900-verify-all` against the live installation. Recheck the 050 properties, secret hiding with a positive control, own-project writes and cross-project read/write denial, runtime allowlists and cross-tool denial, scratch no-network, direct-IP/host/LAN bypass denial, read-only system paths, disposable private-home writes, exit propagation, wrapper integrity and ComfyUI localhost-only binding. Pair deny tests with meaningful positive controls and bounded timeouts; document CDN-dependent checks as WARN where the requirements specify. Acceptance requires `logs\REPORT.txt` with all mandatory checks PASS and explicit treatment of warnings. Implement the separate manual-only, confirmation-gated, C:-safe 999 rollback.
+
+## Execution plan from 2026-10-01
+
+| Step | Deliverable | Gate to proceed |
+|---|---|---|
+| 1 | Corrected 080 installer files | Static review passes; rejected drafts remain blocked |
+| 2 | 080 negative, fresh/partial, idempotency and live regression tests | Documented 080 acceptance PASS |
+| 3 | 090 application installation and startup evidence | Jailed tools work without relaxing isolation |
+| 4 | Applicable 100/110 hardening, maintenance, backup and README | Verified operation and human instructions |
+| 5 | 900 adversarial suite and report | All mandatory live checks PASS |
+| 6 | Manual-only 999 rollback design and final audit | Scope and confirmation reviewed; handover complete |
+
+## Evidence and change-control rules
+
+- Preserve `.planning/01-*`, `1-RESEARCH.md`, `REVIEW.md` and `VERIFICATION.md` as historical Phase 1 records. Do not retroactively rewrite them to imply later testing.
+- `REQUIREMENTS.md` is the requirements/traceability specification. Change completion marks only after the corresponding phase gate supplies evidence; a wrapper-only PASS does not close all Phase 4 or final 900 requirements.
+- Append new installer and application test evidence to the relevant phase validation report rather than replacing prior results. Distinguish observed facts from proposed design and untested claims.
+- ChatGPT prepares and reviews scripts; the user approves local changes and execution; OpenCode may inspect and run approved commands in the local environment and return evidence. No unattended destructive or broad-scope operation.
+- No completed earlier phases are rerun; no Phase 090 work starts before Phase 080 acceptance.
 
 ## Progress
 
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+| Phase | Operational status | Acceptance basis / outstanding work |
+|---|---|---|
+| 1. Foundation & Orchestrator | Complete | Existing Phase 1 validation |
+| 2. Distro & 050 isolation | Complete | Prior operational gate; preserve configuration |
+| 3. Toolchain through 070 | Complete | Prior operational gate and CLI probes |
+| 4. 080 / 090 | In progress | Option C wrapper tests passed; 080 installer and 090 outstanding |
+| 5. Hardening & maintenance | Not started | 100/110 and documentation outstanding |
+| 6. Adversarial verification & rollback | Not started | 900 live evidence and manual-only 999 outstanding |
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation & Orchestrator Contract | 3/3 | Complete | 2026-09-29 |
-| 2. WSL2 Distro & Isolation Hard Gate | 0/TBD | Not started | - |
-| 3. Verified Jail Toolchain | 0/TBD | Not started | - |
-| 4. Jailed Workspaces & Per-Tool Installs | 0/TBD | Not started | - |
-| 5. Hardening, Maintenance & Editor | 0/TBD | Not started | - |
-| 6. Adversarial Verification & Safe Rollback | 0/TBD | Not started | - |
+*Roadmap status updated: 2026-10-01. Completion statements for Phases 2–3 reflect the operational handoff; consult the corresponding execution logs for their original evidence.*
