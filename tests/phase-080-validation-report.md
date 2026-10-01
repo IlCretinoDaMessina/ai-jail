@@ -13,8 +13,8 @@ The preparation is ready to move into implementation, subject to these requireme
 1. Generate allowlists exclusively from `config.env`.
 2. Explicitly reject `*`; `ai-jail 2.2.0` accepts it.
 3. Treat an empty allowlist as no network.
-4. Decide whether wrappers are Bash launchers or transparent command launchers.
-5. Prefer adding `--no-save-config`, or explicitly handle generated project `.ai-jail` files.
+4. Preserve existing secret files and their secure permissions on reruns.
+5. Fail closed on invalid configuration or sandbox startup failure.
 6. After writing `080.bat`, test reruns and partial-state recovery for idempotence.
 
 No Phase 000-070 script was rerun. OpenCode and ComfyUI were not installed. Phase 090 and Phase 900 were not started. No global WSL settings or other distributions were changed.
@@ -38,10 +38,12 @@ No Phase 000-070 script was rerun. OpenCode and ComfyUI were not installed. Phas
 | ComfyUI allowlist | PASS | npm registry, GitHub, and Hugging Face were reachable; GitHub objects and `example.com` were denied. |
 | Direct-IP bypass | PASS | Proxy and `--noproxy` probes to `1.1.1.1` failed. |
 | LAN bypass | PASS | A reachable WSL DNS endpoint at `10.255.255.254:53` was unreachable from each tested network namespace. |
-| Argument forwarding | PASS for Bash arguments | Spaces and a literal `*` survived as positional Bash arguments. |
-| Failure propagation | PASS | `exit 37` propagated as Windows-side exit code 37 for all wrappers. |
+| Argument forwarding | PASS | Option C supports interactive Bash, `-c COMMAND [ARG...]`, and direct `-- COMMAND [ARG...]`. |
+| Failure propagation | PASS | Bash exit `37` and direct-command exit `42` propagated unchanged for all wrappers. |
 | No-argument shell | PASS | Each wrapper accepted commands on stdin and exited zero at EOF. |
-| Direct command invocation | NOT SUPPORTED | `jail-shell /bin/true` was treated as a Bash script and exited 126. |
+| Direct command invocation | PASS | `WRAPPER -- /bin/true` exited `0`; direct arguments with spaces were preserved. |
+| Malformed invocation handling | PASS | Missing `-c` command, empty `--`, unknown options, and bare commands fail with usage exit `64`. |
+| Config persistence | PASS | `--no-save-config` prevents project `.ai-jail` generation across all tested forms. |
 | Git state | PASS after cleanup | All three repositories have an initial commit and empty `git status --porcelain`. |
 | Ownership/world-writable audit | PASS | No non-`aijail` or world-writable entries were found in projects, bin, or secrets. |
 | Dummy env cleanup | PASS | Both env files are empty, `0600`, and `aijail:aijail`. |
@@ -380,7 +382,7 @@ wsl -d ai-jail -e /home/aijail/bin/jail-shell /bin/true
 EXIT=126
 ```
 
-Conclusion: `bash "$@"` correctly forwards Bash arguments, but it does not provide a transparent `wrapper command args...` interface.
+Historical conclusion before the Option C decision: `bash "$@"` correctly forwarded Bash arguments but did not provide a transparent command interface. The Option C follow-up below supersedes this behavior with explicit `-- COMMAND [ARG...]` execution.
 
 ### 12. Host environment isolation
 
@@ -503,6 +505,245 @@ wsl -d ai-jail -e find /home/aijail/projects -maxdepth 2 -type f -not -path '*/.
 
 All exited `0`; all expected-empty outputs were empty.
 
+## Option C Follow-up Validation
+
+Decision: all wrappers support both a Bash interface and an explicit direct-command interface.
+
+Accepted forms:
+
+```text
+WRAPPER
+WRAPPER -c COMMAND [ARG...]
+WRAPPER -- COMMAND [ARG...]
+```
+
+Any other first argument is rejected before `ai-jail` starts. Missing `-c` commands and empty `--` command lists are also rejected. Usage errors exit `64`.
+
+Every wrapper now passes `--no-save-config` to `ai-jail`. Project `.ai-jail` files remained absent after interactive, Bash, direct-command, failure, filesystem, and network tests.
+
+### Deployment Evidence
+
+`jail-shell` was changed and fully tested first. OpenCode and ComfyUI were changed only after shell validation passed.
+
+The first shell payload transfer used a PowerShell text pipeline. Base64 decoding rejected the altered input and exited `1`; atomic deployment left the original wrapper untouched. The partial `.jail-shell.new` was removed. The corrected transfer passed Base64 as one argument, verified the decoded SHA-256 before deployment, ran `bash -n`, set mode `0700`, and atomically renamed the file.
+
+Final deployed hashes:
+
+```text
+c3d2d32428f6f2e49f471e41e8e2d43eef38075ab47c0652fec85234d4e2455e  /home/aijail/bin/jail-shell
+813e75722d44d5f545ab60d59a582264fc15324f29fa5c9a3ff9a98d3c919102  /home/aijail/bin/jail-opencode
+15687c83bce118d8235470323bb45f27637797a8bb9daa947038aa9883d7539a  /home/aijail/bin/jail-comfyui
+EXIT=0
+```
+
+### Shell Interface Tests
+
+Interactive Bash:
+
+```powershell
+@('echo INTERACTIVE_PWD=$PWD') | wsl -d ai-jail -e /home/aijail/bin/jail-shell
+```
+
+```text
+INTERACTIVE_PWD=/home/aijail/projects/scratch
+WRAPPER_EXIT=0
+NO_CONFIG_EXIT=0
+```
+
+Bash command:
+
+```powershell
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -c 'echo hello'
+```
+
+```text
+hello
+WRAPPER_EXIT=0
+NO_CONFIG_EXIT=0
+```
+
+Direct command:
+
+```powershell
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -- /bin/true
+```
+
+```text
+WRAPPER_EXIT=0
+NO_CONFIG_EXIT=0
+```
+
+Malformed invocations:
+
+```powershell
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -c
+wsl -d ai-jail -e /home/aijail/bin/jail-shell --
+wsl -d ai-jail -e /home/aijail/bin/jail-shell /bin/true
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -x
+```
+
+Each printed:
+
+```text
+Usage: jail-shell [-c COMMAND [ARG...]] | [-- COMMAND [ARG...]]
+WRAPPER_EXIT=64
+NO_CONFIG_EXIT=0
+```
+
+Argument preservation:
+
+```powershell
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -c 'echo BASH_ARG_UNDERSCORE=${1// /_}; echo BASH_ARG_LENGTH=${#1}; test ${#1} -eq 9' phase080 'two words'
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -- /bin/sh -c 'echo DIRECT_ARG_LENGTH=${#1}; test ${#1} -eq 9' phase080 'two words'
+```
+
+```text
+BASH_ARG_UNDERSCORE=two_words
+BASH_ARG_LENGTH=9
+BASH exit=0
+DIRECT_ARG_LENGTH=9
+direct exit=0
+```
+
+Failure propagation:
+
+```powershell
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -c 'exit 37'
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -- /bin/sh -c 'exit 42'
+wsl -d ai-jail -e /home/aijail/bin/jail-shell -- /phase080-command-does-not-exist
+```
+
+```text
+BASH_EXIT=37
+DIRECT_EXIT=42
+Failed to exec /phase080-command-does-not-exist: No such file or directory
+WRAPPER_EXIT=1
+NO_CONFIG_EXIT=0
+```
+
+### Shell Security Regression
+
+The shell regression rechecked its working directory, hidden `.secrets`, own-project write, both peer read and write denials, host-side absence of denied files, and marker cleanup:
+
+```text
+PWD=/home/aijail/projects/scratch
+OWN_RC=0
+OPEN_WRITE_RC=1
+COMFY_WRITE_RC=1
+OPEN_READ_RC=1
+COMFY_READ_RC=1
+JAIL_VALIDATION_EXIT=0
+OWN_HOST_EXIT=0
+OPEN_HOST_UNCHANGED_EXIT=0
+COMFY_HOST_UNCHANGED_EXIT=0
+CLEANUP_EXIT=0
+```
+
+No-network regression:
+
+```text
+registry.npmjs.org: curl exit 6, could not resolve host
+1.1.1.1 with --noproxy: curl exit 7
+10.255.255.254:53: network unreachable, exit 1
+VALIDATION_EXIT=0
+NO_CONFIG_EXIT=0
+```
+
+Host environment and filesystem regression:
+
+```text
+HOST_ENV_PROBE_RC=1
+HOME_WRITE_RC=0
+ETC_WRITE_RC=1, read-only filesystem
+JAIL_VALIDATION_EXIT=0
+HOST_HOME_UNCHANGED_EXIT=0
+HOST_ETC_UNCHANGED_EXIT=0
+```
+
+### OpenCode and ComfyUI Interface Tests
+
+The accepted-form tests were repeated for both networked wrappers:
+
+```text
+jail-opencode interactive PWD=/home/aijail/projects/opencode-work, exit 0
+jail-comfyui interactive PWD=/home/aijail/projects/comfyui, exit 0
+both `-c 'echo hello'`: hello, exit 0
+both `-- /bin/true`: exit 0
+all corresponding NO_CONFIG_EXIT values: 0
+```
+
+For each wrapper, missing `-c`, empty `--`, and bare `/bin/true` printed wrapper-specific usage and exited `64`. No `.ai-jail` file was created.
+
+Both wrappers preserved a nine-character `two words` argument in Bash and direct modes. Both propagated Bash exit `37` and direct exit `42` unchanged.
+
+### OpenCode and ComfyUI Security Regression
+
+OpenCode:
+
+```text
+PWD=/home/aijail/projects/opencode-work
+OPEN_ONLY=unset
+OWN_RC=0
+SCRATCH_WRITE_RC=1
+COMFY_WRITE_RC=1
+SCRATCH_READ_RC=1
+COMFY_READ_RC=1
+JAIL_VALIDATION_EXIT=0
+all host verification and cleanup exits=0
+```
+
+ComfyUI:
+
+```text
+PWD=/home/aijail/projects/comfyui
+COMFY_ONLY=unset
+OWN_RC=0
+SCRATCH_WRITE_RC=1
+OPEN_WRITE_RC=1
+SCRATCH_READ_RC=1
+OPEN_READ_RC=1
+JAIL_VALIDATION_EXIT=0
+all host verification and cleanup exits=0
+```
+
+Both wrappers hid `.secrets`. Their env variables were unset because the final env files are intentionally empty.
+
+Allowed destinations were tested through the direct-command interface:
+
+```text
+OpenCode registry.npmjs.org: HTTP 200, exit 0
+OpenCode github.com: HTTP 200, exit 0
+OpenCode objects.githubusercontent.com: HTTP 404, exit 0
+ComfyUI registry.npmjs.org: HTTP 200, exit 0
+ComfyUI github.com: HTTP 200, exit 0
+ComfyUI huggingface.co: HTTP 200, exit 0
+```
+
+Denied destinations and bypasses:
+
+```text
+OpenCode huggingface.co: proxy 403, curl exit 56
+ComfyUI objects.githubusercontent.com: proxy 403, curl exit 56
+Both direct 1.1.1.1 probes with --noproxy: curl exit 7
+Both LAN 10.255.255.254:53 probes: network unreachable, operation exit 1, validation exit 0
+```
+
+Both wrappers repeated the host-only environment, disposable private-home, read-only `/etc`, and real-host unchanged checks with the same passing results as `jail-shell`.
+
+### Option C Final Audit
+
+```text
+bash -n all wrappers: exit 0
+all wrappers: 0700 aijail:aijail
+find project .ai-jail files: no output, exit 0
+find wrapper *.new files: no output, exit 0
+.secrets: 0700 aijail:aijail
+both env files: 0600 aijail:aijail, size 0
+all three Git repositories: ## master with no changes
+ownership/world-writable violation search: no output, exit 0
+project non-Git temporary-file search: no output, exit 0
+```
+
 ## Exact Final Wrapper Contents
 
 ### `/home/aijail/bin/jail-shell`
@@ -510,8 +751,32 @@ All exited `0`; all expected-empty outputs were empty.
 ```bash
 #!/bin/bash
 set -e
+
+usage() {
+    echo "Usage: jail-shell [-c COMMAND [ARG...]] | [-- COMMAND [ARG...]]" >&2
+    exit 64
+}
+
 cd /home/aijail/projects/scratch
-exec /home/aijail/.cargo/bin/ai-jail --clean --private-home --hide-dotdir .secrets --rw-map /home/aijail/projects/scratch --no-network --terminal-passthrough --exec -- bash "$@"
+
+case "$#:$1" in
+    0:)
+        set -- bash
+        ;;
+    *:-c)
+        [ "$#" -ge 2 ] || usage
+        set -- bash "$@"
+        ;;
+    *:--)
+        shift
+        [ "$#" -ge 1 ] || usage
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+exec /home/aijail/.cargo/bin/ai-jail --clean --no-save-config --private-home --hide-dotdir .secrets --rw-map /home/aijail/projects/scratch --no-network --terminal-passthrough --exec -- "$@"
 ```
 
 ### `/home/aijail/bin/jail-opencode`
@@ -519,8 +784,32 @@ exec /home/aijail/.cargo/bin/ai-jail --clean --private-home --hide-dotdir .secre
 ```bash
 #!/bin/bash
 set -e
+
+usage() {
+    echo "Usage: jail-opencode [-c COMMAND [ARG...]] | [-- COMMAND [ARG...]]" >&2
+    exit 64
+}
+
 cd /home/aijail/projects/opencode-work
-exec /home/aijail/.cargo/bin/ai-jail --clean --private-home --hide-dotdir .secrets --rw-map /home/aijail/projects/opencode-work --allow-host registry.npmjs.org --allow-host github.com --allow-host objects.githubusercontent.com --env-from-file /home/aijail/.secrets/opencode.env --terminal-passthrough --exec -- bash "$@"
+
+case "$#:$1" in
+    0:)
+        set -- bash
+        ;;
+    *:-c)
+        [ "$#" -ge 2 ] || usage
+        set -- bash "$@"
+        ;;
+    *:--)
+        shift
+        [ "$#" -ge 1 ] || usage
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+exec /home/aijail/.cargo/bin/ai-jail --clean --no-save-config --private-home --hide-dotdir .secrets --rw-map /home/aijail/projects/opencode-work --allow-host registry.npmjs.org --allow-host github.com --allow-host objects.githubusercontent.com --env-from-file /home/aijail/.secrets/opencode.env --terminal-passthrough --exec -- "$@"
 ```
 
 ### `/home/aijail/bin/jail-comfyui`
@@ -528,16 +817,40 @@ exec /home/aijail/.cargo/bin/ai-jail --clean --private-home --hide-dotdir .secre
 ```bash
 #!/bin/bash
 set -e
+
+usage() {
+    echo "Usage: jail-comfyui [-c COMMAND [ARG...]] | [-- COMMAND [ARG...]]" >&2
+    exit 64
+}
+
 cd /home/aijail/projects/comfyui
-exec /home/aijail/.cargo/bin/ai-jail --clean --private-home --hide-dotdir .secrets --rw-map /home/aijail/projects/comfyui --allow-host registry.npmjs.org --allow-host github.com --allow-host huggingface.co --env-from-file /home/aijail/.secrets/comfyui.env --terminal-passthrough --exec -- bash "$@"
+
+case "$#:$1" in
+    0:)
+        set -- bash
+        ;;
+    *:-c)
+        [ "$#" -ge 2 ] || usage
+        set -- bash "$@"
+        ;;
+    *:--)
+        shift
+        [ "$#" -ge 1 ] || usage
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+exec /home/aijail/.cargo/bin/ai-jail --clean --no-save-config --private-home --hide-dotdir .secrets --rw-map /home/aijail/projects/comfyui --allow-host registry.npmjs.org --allow-host github.com --allow-host huggingface.co --env-from-file /home/aijail/.secrets/comfyui.env --terminal-passthrough --exec -- "$@"
 ```
 
 ## Final Permissions and State
 
 ```text
--rwx------ 700 aijail:aijail 230 /home/aijail/bin/jail-shell
--rwx------ 700 aijail:aijail 379 /home/aijail/bin/jail-opencode
--rwx------ 700 aijail:aijail 351 /home/aijail/bin/jail-comfyui
+-rwx------ 700 aijail:aijail 586 /home/aijail/bin/jail-shell
+-rwx------ 700 aijail:aijail 738 /home/aijail/bin/jail-opencode
+-rwx------ 700 aijail:aijail 709 /home/aijail/bin/jail-comfyui
 drwxr-xr-x 755 aijail:aijail /home/aijail/projects/scratch
 drwxr-xr-x 755 aijail:aijail /home/aijail/projects/opencode-work
 drwxr-xr-x 755 aijail:aijail /home/aijail/projects/comfyui
@@ -552,20 +865,21 @@ All three Git worktrees are clean. No non-Git files remain in the project roots.
 
 1. Documentation says allowlists come exclusively from `config.env`. The current manually created wrappers hard-code values that match `config.env`; provenance and update behavior cannot be proven until `080.bat` generates them.
 2. Documentation requires `*` rejection, but `ai-jail 2.2.0` accepts `--allow-host "*"`. The batch script must enforce rejection fail-closed.
-3. Wrapper invocations create untracked project `.ai-jail` files because save-config defaults on. They were cleaned, but the next wrapper invocation will recreate them. Adding `--no-save-config` is the smallest likely fix and should be tested when implementing `080.bat`.
-4. `bash "$@"` is appropriate for a shell-launcher contract, including no args, `-c`, `-lc`, and Bash script paths. It is not appropriate if users expect `jail-opencode opencode ...` or `jail-comfyui python ...` to directly execute commands. The intended UX is not defined in the available docs.
+3. The wrapper interface is now explicitly Option C. No args opens Bash, `-c` selects Bash execution, and `--` selects direct execution. Bare commands without `--` intentionally fail with status `64`.
+4. `--no-save-config` resolved the generated project `.ai-jail` issue. No configuration files were generated during the follow-up suite.
 5. The existing project plan requires empty allowlists to mean no network. Scratch proves explicit `--no-network`; the future config-to-wrapper empty-list branch remains unimplemented and therefore untested.
-6. External-host checks prove policy at the time of testing but depend on DNS and public service availability. The LAN control reduced ambiguity by proving the selected LAN target was reachable outside the jail.
+6. Existing secret files and permissions must be preserved by the future idempotent installer. The current empty files were not modified during Option C work.
+7. External-host checks prove policy at the time of testing but depend on DNS and public service availability. The LAN control reduced ambiguity by proving the selected LAN target was reachable outside the jail.
 
 ## Remaining Work for ChatGPT
 
-1. Decide and document the wrapper CLI contract: Bash launcher or transparent command launcher.
-2. Decide whether to add `--no-save-config`; recommended to avoid modifying project Git state on every wrapper run.
-3. Write `080.bat` using `_common.bat` contracts and LF-safe wrapper generation.
-4. Parse `ALLOW_HOSTS_OPENCODE` and `ALLOW_HOSTS_COMFYUI` exclusively from `config.env`.
-5. Validate each allowlist entry and reject `*`, empty elements, malformed hosts, and unsafe shell/batch characters fail-closed.
-6. Emit `--no-network` when an allowlist is empty.
-7. Preserve ownership and modes: wrappers `0700`, `.secrets` `0700`, env files `0600`.
-8. Preserve existing nonempty secret files on rerun; do not truncate real credentials in an idempotent installer.
-9. Test `080.bat` from clean state, repeated state, and safe partial state. Confirm exact exit codes and logs.
+1. Write `080.bat` using `_common.bat` contracts and LF-safe wrapper generation, but only after review of this report.
+2. Generate the tested Option C wrappers, including `--no-save-config`, exactly and fail closed if writing, ownership, permission, syntax, or sandbox checks fail.
+3. Parse `ALLOW_HOSTS_OPENCODE` and `ALLOW_HOSTS_COMFYUI` exclusively from `config.env`.
+4. Validate each allowlist entry and reject `*`, empty elements, malformed hosts, and unsafe shell/batch characters fail-closed.
+5. Emit `--no-network` when an allowlist is empty.
+6. Preserve ownership and modes: wrappers `0700`, `.secrets` `0700`, env files `0600`.
+7. Preserve existing nonempty secret files and their permissions on rerun; never truncate real credentials.
+8. Fail closed on invalid configuration and any `ai-jail` startup failure.
+9. Test `080.bat` from clean state, repeated state, invalid configuration, sandbox-startup failure, and safe partial state. Confirm exact exit codes and logs.
 10. Rerun the Phase 080 acceptance suite against artifacts generated by the batch script before starting Phase 090.
