@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "phase": "030",
+  "name": "Dedicated WSL2 Distribution",
+  "status": "MODERNIZATION_CANDIDATE",
+  "mode": "REVIEW_ONLY",
+  "version_policy": "approved-compatible-stable",
+  "configuration": {
+    "source": "config.env",
+    "required_keys": [
+      "TARGET_DRIVE",
+      "DISTRO",
+      "BASE_DISTRO"
+    ],
+    "destination_pattern": "TARGET_DRIVE\\DISTRO\\wsl",
+    "vhdx_filename": "ext4.vhdx"
+  },
+  "review": {
+    "require_administrator": true,
+    "query_registered_distributions": true,
+    "verify_wsl_version_2": true,
+    "verify_registered_storage_path": true,
+    "verify_destination_vhdx": true,
+    "detect_orphan_destination": true,
+    "fail_on_registration_conflict": true,
+    "fail_on_storage_path_mismatch": true,
+    "fail_on_ambiguous_state": true
+  },
+  "installation": {
+    "enabled": false,
+    "base_distribution_source": "OFFICIAL_APPROVED_SOURCE",
+    "resolve_version_before_install": true,
+    "record_resolved_version": true,
+    "record_artifact_integrity": true,
+    "explicit_approval_required": true,
+    "approved_install_command": "wsl.exe --install BASE_DISTRO --name DISTRO --location DEST --no-launch",
+    "overwrite_existing_distribution": false,
+    "overwrite_existing_vhdx": false,
+    "automatic_unregister": false,
+    "automatic_import": false,
+    "automatic_shutdown": false,
+    "automatic_reboot": false
+  },
+  "security": {
+    "allow_read_only_wsl_queries": true,
+    "allow_read_only_registry_queries": true,
+    "allow_distribution_creation": false,
+    "allow_distribution_execution": false,
+    "allow_global_wslconfig_changes": false,
+    "allow_other_distribution_changes": false,
+    "production_apply_authorized": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "reboot_required": 3010,
+    "unknown": "FAIL_CLOSED"
+  }
+}

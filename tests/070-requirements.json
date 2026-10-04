@@ -1,0 +1,115 @@
+
+{
+  "schema": 1,
+  "phase": "070",
+  "name": "AI Jail Sandbox Engine",
+  "status": "MODERNIZATION_CANDIDATE",
+  "mode": "OFFLINE_REVIEW_ONLY",
+  "configuration": {
+    "source": "config.env",
+    "required_keys": [
+      "DISTRO",
+      "LINUX_USER"
+    ],
+    "binary_path_pattern": "/home/{LINUX_USER}/.cargo/bin/ai-jail"
+  },
+  "dependencies": {
+    "require_phase_030_verified": true,
+    "require_phase_040_configuration_applied": true,
+    "require_phase_050_runtime_pass": true,
+    "require_phase_060_toolchain_verified": true,
+    "accept_offline_reviews_as_runtime_proof": false,
+    "require_fresh_isolation_verification": true,
+    "block_execution_without_runtime_proof": true
+  },
+  "review": {
+    "administrator_required": true,
+    "validate_requirements": true,
+    "validate_check_inventory": true,
+    "validate_version_policy": true,
+    "validate_installation_policy": true,
+    "offline_only": true
+  },
+  "version_policy": {
+    "existing_baseline": "2.2.0",
+    "installation_target": "LATEST_APPROVED_COMPATIBLE_STABLE",
+    "source": "OFFICIAL_UPSTREAM_RELEASE",
+    "resolve_before_installation": true,
+    "compatibility_review_required": true,
+    "security_baseline_required": true,
+    "automatic_security_downgrades": false,
+    "automatic_replacement": false,
+    "record_resolved_version": true,
+    "record_installed_version": true,
+    "record_source_revision": true,
+    "record_artifact_integrity": true,
+    "state_directory": ".state"
+  },
+  "runtime_verification": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "fail_fast": true,
+    "checks": [
+      "unprivileged_user_namespaces",
+      "cargo_available",
+      "bubblewrap_available",
+      "installed_binary_version",
+      "dry_run_network_namespace",
+      "dry_run_landlock",
+      "real_sandbox_execution",
+      "allow_host_capability",
+      "default_deny_network",
+      "gpu_informational_checks"
+    ],
+    "default_deny_network": {
+      "require_successful_sandbox_execution": true,
+      "require_positive_denial_evidence": true,
+      "treat_arbitrary_curl_failure_as_success": false,
+      "treat_ambiguous_result_as_failure": true
+    },
+    "gpu_checks": {
+      "mandatory": false,
+      "missing_component_result": "WARNING",
+      "checks": [
+        "/usr/lib/wsl/lib/nvidia-smi",
+        "/dev/dxg",
+        "nvidia_smi_execution"
+      ]
+    },
+    "treat_missing_checks_as_failure": true,
+    "treat_ambiguous_results_as_failure": true,
+    "require_all_mandatory_checks_to_pass": true
+  },
+  "installation": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "fresh_machine_supported_target": true,
+    "official_sources_only": true,
+    "require_resolved_installation_plan": true,
+    "require_artifact_integrity_verification": true,
+    "require_compatibility_review": true,
+    "record_final_state": true,
+    "reuse_temporary_pilot_artifacts": false,
+    "overwrite_existing_binary_without_approval": false,
+    "automatic_downgrades": false,
+    "production_apply_authorized": false
+  },
+  "security": {
+    "allow_offline_review": true,
+    "allow_distribution_execution": false,
+    "allow_downloads": false,
+    "allow_package_installation": false,
+    "allow_sandbox_execution": false,
+    "allow_distribution_modification": false,
+    "allow_distribution_termination": false,
+    "allow_wsl_shutdown": false,
+    "allow_isolation_gate_bypass": false,
+    "allow_unapproved_network_access": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "reboot_required": 3010,
+    "unknown": "FAIL_CLOSED"
+  }
+}

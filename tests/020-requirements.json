@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "phase": "020",
+  "name": "WSL Verification",
+  "version_policy": "minimum",
+  "version_source": {
+    "command": "wsl.exe --version",
+    "minimum_version_key": "MIN_WSL_VERSION",
+    "configuration": "config.env",
+    "requirement_reason": "WSL 2.4.4+ is required for the Phase 030 installation method"
+  },
+  "execution": {
+    "read_only": true,
+    "administrator_required": true,
+    "standalone_auto_elevation": true,
+    "orchestrated_auto_elevation": false,
+    "fail_fast": true
+  },
+  "security": {
+    "allow_wsl_version_query": true,
+    "allow_distro_execution": false,
+    "allow_wsl_installation": false,
+    "allow_wsl_update": false,
+    "allow_wsl_shutdown": false,
+    "allow_system_modifications": false,
+    "allow_downloads": false
+  },
+  "failure_guidance": {
+    "missing_wsl": "Install WSL through the approved installation process.",
+    "outdated_wsl": "Review and approve a WSL update before proceeding.",
+    "unparseable_version": "Fail closed; do not assume compatibility."
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1
+  }
+}

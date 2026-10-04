@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "phase": "010",
+  "name": "Windows Preflight",
+  "version_policy": "security-baseline",
+  "execution": {
+    "read_only": true,
+    "administrator_required": true,
+    "standalone_auto_elevation": true,
+    "orchestrated_auto_elevation": false,
+    "fail_fast": true
+  },
+  "checks": [
+    "administrator",
+    "configuration",
+    "linux_user",
+    "virtualization",
+    "disk_space",
+    "internet"
+  ],
+  "configuration": {
+    "source": "config.env",
+    "disk_threshold_key": "MIN_FREE_GB",
+    "disk_target_key": "TARGET_DRIVE",
+    "linux_user_key": "LINUX_USER"
+  },
+  "security": {
+    "allow_wsl_execution": false,
+    "allow_downloads": false,
+    "allow_system_modifications": false,
+    "allow_docker_dependency": false,
+    "allow_security_bypass": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1
+  }
+}

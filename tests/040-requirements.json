@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "phase": "040",
+  "name": "WSL Distribution Configuration and Isolation",
+  "status": "MODERNIZATION_CANDIDATE",
+  "mode": "OFFLINE_REVIEW_ONLY",
+  "configuration": {
+    "source": "config.env",
+    "required_keys": [
+      "DISTRO",
+      "LINUX_USER"
+    ],
+    "target_file": "/etc/wsl.conf",
+    "expected_content": {
+      "boot": {
+        "systemd": "true"
+      },
+      "automount": {
+        "enabled": "false",
+        "mountFsTab": "false"
+      },
+      "interop": {
+        "enabled": "false",
+        "appendWindowsPath": "false"
+      },
+      "user": {
+        "default": "CONFIG:LINUX_USER"
+      }
+    },
+    "encoding": "UTF-8",
+    "line_endings": "LF",
+    "comparison": "EXACT"
+  },
+  "review": {
+    "administrator_required": true,
+    "validate_configuration": true,
+    "validate_expected_isolation_policy": true,
+    "require_phase_030_verified": true,
+    "offline_only": true,
+    "inspect_live_wsl_conf": false,
+    "verify_runtime_isolation": false
+  },
+  "runtime_verification": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "verify_default_user": true,
+    "verify_windows_mounts_absent": true,
+    "verify_drvfs_absent": true,
+    "verify_windows_interop_disabled": true,
+    "verify_windows_paths_absent": true
+  },
+  "installation": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "create_linux_user_if_missing": true,
+    "modify_wsl_conf_only_if_different": true,
+    "verify_before_and_after": true,
+    "automatic_termination": false,
+    "termination_requires_separate_approval": true,
+    "overwrite_unrelated_configuration": false,
+    "automatic_shutdown": false,
+    "automatic_reboot": false
+  },
+  "security": {
+    "allow_offline_configuration_review": true,
+    "allow_distribution_execution": false,
+    "allow_linux_user_creation": false,
+    "allow_wsl_conf_modification": false,
+    "allow_distribution_termination": false,
+    "allow_other_distribution_changes": false,
+    "allow_global_wslconfig_changes": false,
+    "production_apply_authorized": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "reboot_required": 3010,
+    "unknown": "FAIL_CLOSED"
+  }
+}

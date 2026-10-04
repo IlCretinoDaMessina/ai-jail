@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "phase": "060",
+  "name": "Base Linux Toolchain",
+  "status": "MODERNIZATION_CANDIDATE",
+  "mode": "OFFLINE_REVIEW_ONLY",
+  "configuration": {
+    "source": "config.env",
+    "required_keys": [
+      "DISTRO",
+      "LINUX_USER"
+    ]
+  },
+  "dependencies": {
+    "require_phase_030_verified": true,
+    "require_phase_040_configuration_applied": true,
+    "require_phase_050_runtime_pass": true,
+    "accept_phase_050_offline_review_as_runtime_proof": false,
+    "require_fresh_isolation_verification": true,
+    "block_execution_without_runtime_proof": true
+  },
+  "review": {
+    "administrator_required": true,
+    "validate_requirements": true,
+    "validate_tool_inventory": true,
+    "validate_installation_policy": true,
+    "offline_only": true
+  },
+  "toolchain": {
+    "required_commands": [
+      "bwrap",
+      "git",
+      "curl",
+      "jq",
+      "rustup",
+      "node",
+      "npm",
+      "python3",
+      "pip3",
+      "pkg-config",
+      "gcc"
+    ],
+    "additional_checks": [
+      "rust_active_toolchain",
+      "unprivileged_user_namespaces"
+    ],
+    "gpu_checks": {
+      "mandatory": false,
+      "checks": [
+        "/usr/lib/wsl/lib",
+        "nvidia-smi",
+        "/dev/dxg"
+      ],
+      "missing_component_result": "WARNING"
+    }
+  },
+  "version_policy": {
+    "default": "LATEST_APPROVED_STABLE",
+    "resolve_before_installation": true,
+    "compatibility_review_required": true,
+    "security_baseline_required": true,
+    "automatic_security_downgrades": false,
+    "record_resolved_versions": true,
+    "record_installed_versions": true,
+    "record_artifact_integrity": true,
+    "record_installation_source": true,
+    "state_directory": ".state"
+  },
+  "runtime_verification": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "require_positive_command_execution": true,
+    "treat_missing_tools_as_failure": true,
+    "treat_ambiguous_results_as_failure": true,
+    "allow_unapproved_installation": false
+  },
+  "installation": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "fresh_machine_supported_target": true,
+    "approved_sources_only": true,
+    "require_resolved_installation_plan": true,
+    "require_artifact_integrity_verification": true,
+    "record_final_state": true,
+    "reuse_temporary_pilot_artifacts": false,
+    "automatic_downgrades": false,
+    "production_apply_authorized": false
+  },
+  "security": {
+    "allow_offline_review": true,
+    "allow_distribution_execution": false,
+    "allow_package_installation": false,
+    "allow_downloads": false,
+    "allow_distribution_modification": false,
+    "allow_distribution_termination": false,
+    "allow_wsl_shutdown": false,
+    "allow_isolation_gate_bypass": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "reboot_required": 3010,
+    "unknown": "FAIL_CLOSED"
+  }
+}
