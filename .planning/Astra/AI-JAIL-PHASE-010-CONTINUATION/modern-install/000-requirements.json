@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "phase": "000",
+  "name": "AI Jail Installation Orchestrator",
+  "status": "MODERNIZATION_CANDIDATE",
+
+  "execution": {
+    "discover_phases": true,
+    "phase_filename_pattern": "NNN-*.bat",
+    "exclude_phases": ["000", "999"],
+    "strict_ordering": true,
+    "stop_on_failure": true,
+    "idempotency_required": true
+  },
+
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "reboot_required": 3010,
+    "unknown": "FAIL_CLOSED"
+  },
+
+  "requirements": {
+    "per_phase_json_required": true,
+    "validate_before_execution": true,
+    "unsupported_schema": "FAIL_CLOSED",
+    "missing_requirements": "FAIL_CLOSED"
+  },
+
+  "approvals": {
+    "resolve_versions_before_installation": true,
+    "display_installation_plan": true,
+    "explicit_installation_approval": true,
+    "production_apply_authorized": false,
+    "automatic_security_downgrades": false
+  },
+
+  "phase_skipping": {
+    "default": "DENY",
+    "security_critical_phases": [
+      "010",
+      "020",
+      "030",
+      "040",
+      "050",
+      "070",
+      "080"
+    ],
+    "require_explicit_review": true
+  },
+
+  "logging": {
+    "preserve_common_bat_contract": true,
+    "preserve_phase_log": true,
+    "record_resolved_versions": true,
+    "record_installed_versions": true,
+    "record_failures": true
+  },
+
+  "compatibility": {
+    "windows_entry_point": "BAT",
+    "standalone_phase_execution": true,
+    "orchestrated_execution": true,
+    "standalone_pause": true,
+    "orchestrated_pause": false,
+    "retain_resume_from": true
+  }
+}

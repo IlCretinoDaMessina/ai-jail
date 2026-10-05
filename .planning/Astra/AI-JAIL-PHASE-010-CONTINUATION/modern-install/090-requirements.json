@@ -1,0 +1,150 @@
+
+{
+  "schema": 1,
+  "phase": "090",
+  "name": "OpenCode Installation",
+  "status": "MODERNIZATION_CANDIDATE",
+  "mode": "OFFLINE_REVIEW_ONLY",
+  "scope": {
+    "install_opencode": true,
+    "install_gsd_in_this_phase": false,
+    "install_tps_plugin_in_this_phase": false,
+    "preserve_existing_pilot": true,
+    "preserve_existing_production_installation": true,
+    "install_vscode": false,
+    "enable_nono": false
+  },
+  "configuration": {
+    "source": "config.env",
+    "required_keys": [
+      "DISTRO",
+      "LINUX_USER",
+      "INSTALL_OPENCODE",
+      "INSTALL_VSCODE",
+      "ENABLE_NONO",
+      "ALLOW_HOSTS_INSTALL"
+    ],
+    "required_feature_flags": {
+      "INSTALL_OPENCODE": "1",
+      "INSTALL_VSCODE": "0",
+      "ENABLE_NONO": "0"
+    }
+  },
+  "dependencies": {
+    "require_phase_030_verified": true,
+    "require_phase_040_configuration_applied": true,
+    "require_phase_050_runtime_pass": true,
+    "require_phase_060_toolchain_verified": true,
+    "require_phase_070_sandbox_verified": true,
+    "require_phase_080_approved_state": true,
+    "accept_offline_reviews_as_runtime_proof": false,
+    "block_installation_without_runtime_proof": true
+  },
+  "historical_baseline": {
+    "opencode_version": "1.18.34",
+    "archive_sha256": "24b0d458d21ef548b2752166303defcf7f4945b049fb4876ab78dfaf86d81b27",
+    "binary_sha256": "9ca0b9953d49997601655e54f846a3efa464f237e47c6f1b04716d0f2e64c4c2",
+    "gsd_version": "1.15.0",
+    "experimental_evidence_only": true,
+    "production_provenance_approved": false,
+    "authorize_reuse_of_pilot_artifacts": false
+  },
+  "version_policy": {
+    "target": "LATEST_APPROVED_COMPATIBLE_STABLE",
+    "official_repository": "https://github.com/anomalyco/opencode",
+    "resolve_release_before_installation": true,
+    "reject_prereleases_by_default": true,
+    "verify_cpu_and_os_compatibility": true,
+    "verify_artifact_provenance": true,
+    "verify_archive_integrity": true,
+    "verify_extracted_binary_integrity": true,
+    "automatic_security_downgrades": false,
+    "automatic_replacement_of_existing_installation": false,
+    "record_resolved_version": true,
+    "record_installed_version": true,
+    "record_artifact_source": true,
+    "record_artifact_integrity": true,
+    "record_approval_reference": true,
+    "state_directory": ".state"
+  },
+  "installation": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "fresh_machine_supported_target": true,
+    "official_sources_only": true,
+    "approved_download_hosts_only": true,
+    "verify_redirect_destinations": true,
+    "require_resolved_installation_plan": true,
+    "require_artifact_integrity_verification": true,
+    "require_pre_install_conflict_review": true,
+    "require_post_install_version_verification": true,
+    "reuse_temporary_staging_artifacts": false,
+    "reuse_phase092_pilot_artifacts": false,
+    "overwrite_existing_binary_without_approval": false,
+    "modify_existing_runtime_without_approval": false,
+    "production_apply_authorized": false
+  },
+  "runtime": {
+    "verification_enabled": false,
+    "explicit_approval_required": true,
+    "initial_model_candidate": "opencode/big-pickle",
+    "provider_host_candidate": "opencode.ai",
+    "provider_hosts_approved_for_production": false,
+    "remove_installation_hosts_from_runtime_allowlist": true,
+    "production_loopback_exception_approved": false,
+    "loopback_exception_only_after_namespace_entry": true,
+    "authenticated_loopback_server_required_if_enabled": true,
+    "persistent_sessions_approved": false,
+    "server_auth_design_approved": false,
+    "managed_config_precedence_must_be_verified": true,
+    "prevent_windows_opencode_fallback": true,
+    "secrets_in_writable_project": false
+  },
+  "acceptance_gates": {
+    "A1_upstream_provenance_and_platform": false,
+    "A2_complete_gsd_dependency_and_generated_tree_audit": false,
+    "A3_installation_hosts_and_redirect_evidence": false,
+    "A4_A5_provider_model_and_runtime_network_policy": false,
+    "A6_versioned_paths_and_config_precedence": false,
+    "A7_windows_launcher_review": false,
+    "A8_runtime_wrapper_and_config_approval": false,
+    "A9_mocked_orchestrator_and_exit_codes": false,
+    "A10_persistence_and_secret_scope": false,
+    "A11_no_vscode_integration": true,
+    "A12_separate_execution_approvals": false,
+    "production_loopback_threat_review": false,
+    "authenticated_server_lifecycle_review": false,
+    "final_regression_and_negative_tests": false
+  },
+  "approval": {
+    "download_and_install": false,
+    "live_provider_requests": false,
+    "runtime_verification": false,
+    "windows_launcher_replacement": false,
+    "production_wrapper_changes": false,
+    "production_config_changes": false,
+    "wsl_termination": false,
+    "production_apply": false,
+    "direct_powershell_installation": false,
+    "implicit_orchestrator_installation": false
+  },
+  "security": {
+    "allow_offline_review": true,
+    "allow_distribution_execution": false,
+    "allow_downloads": false,
+    "allow_installation": false,
+    "allow_provider_requests": false,
+    "allow_launcher_replacement": false,
+    "allow_distribution_termination": false,
+    "allow_wsl_shutdown": false,
+    "allow_other_distribution_changes": false,
+    "allow_global_wslconfig_changes": false,
+    "allow_isolation_gate_bypass": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "reboot_required": 3010,
+    "unknown": "FAIL_CLOSED"
+  }
+}

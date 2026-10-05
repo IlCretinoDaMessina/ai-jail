@@ -1,0 +1,154 @@
+
+{
+  "schema": 1,
+  "phase": "080",
+  "name": "Sandbox Workspace and Launcher Setup",
+  "status": "MODERNIZATION_CANDIDATE",
+  "mode": "OFFLINE_REVIEW_ONLY",
+  "configuration": {
+    "source": "config.env",
+    "require_exact_documented_schema": true,
+    "reject_unknown_keys": true,
+    "reject_missing_keys": true,
+    "reject_duplicate_keys": true,
+    "reject_malformed_values": true,
+    "target_distro": "ai-jail",
+    "target_user": "aijail"
+  },
+  "dependencies": {
+    "require_phase_030_verified": true,
+    "require_phase_040_configuration_applied": true,
+    "require_phase_050_runtime_pass": true,
+    "require_phase_060_toolchain_verified": true,
+    "require_phase_070_sandbox_verified": true,
+    "accept_offline_reviews_as_runtime_proof": false,
+    "allow_implicit_apply_from_orchestrator": false
+  },
+  "review": {
+    "enabled": true,
+    "offline_only": true,
+    "validate_configuration": true,
+    "validate_allowlists": true,
+    "generate_proposed_wrappers_in_memory": true,
+    "validate_generated_wrapper_invariants": true,
+    "validate_apply_payload_structure": true,
+    "print_proposed_operations": true,
+    "invoke_wsl": false,
+    "modify_files": false
+  },
+  "allowlists": {
+    "require_lowercase_ascii_dns": true,
+    "minimum_labels": 2,
+    "require_alphabetic_top_level_label": true,
+    "reject_duplicates": true,
+    "reject_wildcards": true,
+    "reject_ports": true,
+    "reject_metacharacters": true,
+    "reject_canonical_ip_literals": true,
+    "reject_legacy_ip_literals": true,
+    "missing_list": "FAIL",
+    "empty_list": "--no-network"
+  },
+  "launchers": {
+    "names": [
+      "jail-shell",
+      "jail-opencode",
+      "jail-comfyui"
+    ],
+    "parser": "TESTED_OPTION_C",
+    "required_flags": [
+      "--clean",
+      "--no-save-config",
+      "--private-home",
+      "--hide-dotdir .secrets",
+      "--rw-map",
+      "--terminal-passthrough",
+      "--exec"
+    ],
+    "shell_network_policy": "--no-network",
+    "opencode_network_source": "ALLOW_HOSTS_OPENCODE",
+    "comfyui_network_source": "ALLOW_HOSTS_COMFYUI",
+    "opencode_env_file": "/home/aijail/.secrets/opencode.env",
+    "comfyui_env_file": "/home/aijail/.secrets/comfyui.env",
+    "encoding": "UTF-8_NO_BOM",
+    "line_endings": "LF",
+    "mode": "0700",
+    "owner": "aijail"
+  },
+  "managed_state": {
+    "projects": [
+      "scratch",
+      "opencode-work",
+      "comfyui"
+    ],
+    "create_missing_git_repositories": true,
+    "create_initial_empty_commits_when_required": true,
+    "preserve_existing_repositories": true,
+    "preserve_existing_project_data": true,
+    "reject_managed_path_symlinks": true,
+    "validate_existing_ownership": true,
+    "secret_directory_mode": "0700",
+    "secret_file_mode": "0600",
+    "preserve_existing_secret_bytes": true,
+    "never_log_secrets": true
+  },
+  "payload_integrity": {
+    "transport": "BASE64_UTF8_LF",
+    "verify_sha256_inside_linux": true,
+    "validate_shell_syntax_before_execution": true,
+    "allow_powershell_text_pipeline_for_payload_transport": false
+  },
+  "transaction": {
+    "private_owned_staging": true,
+    "stage_all_three_wrappers_before_promotion": true,
+    "validate_staged_hashes": true,
+    "validate_staged_syntax": true,
+    "preserve_existing_wrappers_for_rollback": true,
+    "rollback_on_promotion_failure": true,
+    "report_rollback_failure": true,
+    "never_delete_unrelated_files": true
+  },
+  "acceptance": {
+    "static_validation_required": true,
+    "invalid_config_matrix_required": true,
+    "fresh_install_disposable_distro_only": true,
+    "disposable_test_requires_explicit_approval": true,
+    "existing_state_rerun_required": true,
+    "partial_state_recovery_required": true,
+    "forced_failure_rollback_required": true,
+    "post_install_isolation_required": true,
+    "cross_project_access_tests_required": true,
+    "secret_isolation_required": true,
+    "exit_propagation_required": true,
+    "git_clean_required": true,
+    "no_unexpected_ai_jail_files": true,
+    "filtered_network_client": "PROXY_AWARE_HTTPS_CONNECT",
+    "direct_dns_and_tcp_are_negative_tests": true,
+    "require_connect_denial_for_unapproved_destinations": true
+  },
+  "installation": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "runtime_dependencies_must_pass": true,
+    "approved_installation_plan_required": true,
+    "production_apply_authorized": false
+  },
+  "security": {
+    "allow_offline_review": true,
+    "allow_distribution_execution": false,
+    "allow_distribution_modification": false,
+    "allow_direct_powershell_apply": false,
+    "allow_implicit_orchestrator_apply": false,
+    "allow_distribution_termination": false,
+    "allow_wsl_shutdown": false,
+    "allow_other_distribution_changes": false,
+    "allow_global_wslconfig_changes": false,
+    "allow_isolation_gate_bypass": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "reboot_required": 3010,
+    "unknown": "FAIL_CLOSED"
+  }
+}

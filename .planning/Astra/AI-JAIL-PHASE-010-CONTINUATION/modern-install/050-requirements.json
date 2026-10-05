@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "phase": "050",
+  "name": "WSL Hard Isolation Gate",
+  "status": "MODERNIZATION_CANDIDATE",
+  "mode": "OFFLINE_REVIEW_ONLY",
+  "configuration": {
+    "source": "config.env",
+    "required_keys": [
+      "DISTRO",
+      "LINUX_USER"
+    ]
+  },
+  "dependencies": {
+    "require_phase_030_verified": true,
+    "require_phase_040_configuration_applied": true,
+    "accept_offline_policy_review_as_runtime_proof": false,
+    "require_fresh_runtime_verification": true
+  },
+  "review": {
+    "administrator_required": true,
+    "validate_requirements": true,
+    "validate_check_inventory": true,
+    "offline_only": true
+  },
+  "runtime_verification": {
+    "enabled": false,
+    "explicit_approval_required": true,
+    "fail_fast": true,
+    "checks": [
+      "effective_linux_user",
+      "windows_c_drive_unmounted",
+      "windows_d_drive_unmounted",
+      "no_drvfs_mounts",
+      "cmd_exe_unreachable",
+      "powershell_exe_unreachable",
+      "linux_path_isolated",
+      "independent_mount_inventory"
+    ],
+    "require_positive_check_execution": true,
+    "treat_unavailable_checks_as_failure": true,
+    "treat_ambiguous_results_as_failure": true,
+    "require_all_checks_to_pass": true
+  },
+  "security": {
+    "allow_offline_review": true,
+    "allow_distribution_execution": false,
+    "allow_distribution_modification": false,
+    "allow_distribution_termination": false,
+    "allow_wsl_shutdown": false,
+    "allow_windows_drive_mounts": false,
+    "allow_drvfs": false,
+    "allow_windows_interop": false,
+    "allow_windows_path_injection": false,
+    "allow_security_bypass": false,
+    "production_apply_authorized": false
+  },
+  "installation_gate": {
+    "blocking": true,
+    "requires_runtime_pass": true,
+    "offline_review_satisfies_gate": false,
+    "continue_on_failure": false,
+    "allow_skip": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "unknown": "FAIL_CLOSED"
+  }
+}

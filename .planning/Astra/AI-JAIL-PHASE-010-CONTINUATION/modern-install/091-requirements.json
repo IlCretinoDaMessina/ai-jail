@@ -1,0 +1,105 @@
+
+{
+  "schema": 1,
+  "phase": "091",
+  "name": "OpenCode TPS Meter Plugin",
+  "status": "MODERNIZATION_CANDIDATE",
+  "mode": "OFFLINE_REVIEW_ONLY",
+  "scope": {
+    "plugin": "opencode-tps-meter",
+    "official_repository": "https://github.com/ChiR24/opencode-tps-meter",
+    "preserve_existing_pilot": true,
+    "preserve_existing_opencode_installation": true,
+    "other_plugins_require_separate_review": true
+  },
+  "dependencies": {
+    "require_phase_050_runtime_pass": true,
+    "require_phase_070_sandbox_verified": true,
+    "require_phase_080_approved_state": true,
+    "require_phase_090_opencode_verified": true,
+    "accept_offline_reviews_as_runtime_proof": false,
+    "block_installation_without_runtime_proof": true
+  },
+  "historical_baseline": {
+    "opencode_version": "1.18.34",
+    "plugin_version": "0.4.0",
+    "installation_method": "opencode plug opencode-tps-meter@0.4.0 --global",
+    "experimentally_verified": true,
+    "authorizes_pilot_reuse": false,
+    "authorizes_production_installation": false
+  },
+  "version_policy": {
+    "target": "LATEST_APPROVED_COMPATIBLE_STABLE",
+    "resolve_before_installation": true,
+    "review_opencode_plugin_compatibility": true,
+    "reject_prereleases_by_default": true,
+    "use_exact_resolved_version": true,
+    "record_package_source": true,
+    "record_resolved_version": true,
+    "record_installed_version": true,
+    "record_package_integrity": true,
+    "record_approval_reference": true,
+    "automatic_security_downgrades": false,
+    "automatic_replacement": false,
+    "state_directory": ".state"
+  },
+  "installation": {
+    "enabled": false,
+    "method": "OFFICIAL_OPENCODE_PLUG_COMMAND",
+    "command_pattern": "opencode plug opencode-tps-meter@{APPROVED_VERSION} --global",
+    "use_approved_linux_opencode_binary": true,
+    "use_isolated_xdg_config_home": true,
+    "require_explicit_approval": true,
+    "require_approved_installation_hosts": true,
+    "require_artifact_integrity": true,
+    "require_pre_install_conflict_review": true,
+    "refuse_incomplete_existing_installation": true,
+    "refuse_conflicting_existing_version": true,
+    "no_manual_package_metadata_creation": true,
+    "no_manual_package_cache_population": true,
+    "reuse_phase092_pilot": false,
+    "production_apply_authorized": false
+  },
+  "verification": {
+    "enabled": false,
+    "require_exact_package_name": true,
+    "require_exact_package_version": true,
+    "require_exact_server_registration": true,
+    "require_exact_tui_registration": true,
+    "validate_json_structure_not_serialized_substrings": true,
+    "verify_package_metadata_from_actual_installed_location": true,
+    "distinguish_absent_complete_and_conflicting_states": true,
+    "require_plugin_runtime_functionality_test": true,
+    "require_sandbox_cache_visibility_review": true,
+    "narrow_read_only_cache_mapping": true,
+    "broad_host_cache_access": false
+  },
+  "approval": {
+    "download_and_install": false,
+    "runtime_plugin_execution": false,
+    "plugin_cache_mapping": false,
+    "runtime_configuration_changes": false,
+    "existing_plugin_replacement": false,
+    "production_apply": false,
+    "implicit_orchestrator_installation": false,
+    "direct_script_installation": false
+  },
+  "security": {
+    "allow_offline_review": true,
+    "allow_distribution_execution": false,
+    "allow_downloads": false,
+    "allow_plugin_installation": false,
+    "allow_plugin_execution": false,
+    "allow_host_cache_modification": false,
+    "allow_pilot_modification": false,
+    "allow_distribution_termination": false,
+    "allow_wsl_shutdown": false,
+    "allow_isolation_gate_bypass": false
+  },
+  "exit_codes": {
+    "success": 0,
+    "failure": 1,
+    "reboot_required": 3010,
+    "unknown": "FAIL_CLOSED"
+  }
+}
