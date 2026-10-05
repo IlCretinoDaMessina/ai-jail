@@ -1,0 +1,390 @@
+{
+  "purpose": "Current source snapshot for new-chat context; NOT an accepted-run hash manifest or approval",
+  "captured_utc": "2026-10-05T13:02:38.091773+00:00",
+  "source_directory": "D:\\.coding\\.ai-jail\\modern-install",
+  "source_files_copied": 76,
+  "project_scripts_executed": false,
+  "tests_executed": false,
+  "files": [
+    {
+      "path": "modern-install/000-authorization.ps1",
+      "bytes": 24242,
+      "sha256": "58ABB461CCECA705E786C04FD20B3BEEE4BE0829622089613D1A011376197A35"
+    },
+    {
+      "path": "modern-install/000-authorization.tests.ps1",
+      "bytes": 17621,
+      "sha256": "78979790992231768088CBB435E18106C06DFA1A9F31F91FB902D778873ACB49"
+    },
+    {
+      "path": "modern-install/000-config-encoding.tests.ps1",
+      "bytes": 11144,
+      "sha256": "667DC7E99483DB3741BB6B1EF6C3DBBE0B7B6D1B02B9516EF4F931F09D2C3853"
+    },
+    {
+      "path": "modern-install/000-config-export.ps1",
+      "bytes": 1542,
+      "sha256": "FCDF628C7AEE88E02FF1A604E642BB51A2047C01DF5DD8909A59F1F3630F08C6"
+    },
+    {
+      "path": "modern-install/000-config-validation.tests.ps1",
+      "bytes": 19405,
+      "sha256": "C6DDFB142BACD3ACA48C8F4F599C4F5EB9A54B5450F2585D7490A75167EB38CC"
+    },
+    {
+      "path": "modern-install/000-config.ps1",
+      "bytes": 9428,
+      "sha256": "9D64840A56FC495BBBBBC820D8414802337F9D471FB8B3138CC299C62428D9E4"
+    },
+    {
+      "path": "modern-install/000-deliverable1.tests.ps1",
+      "bytes": 4026,
+      "sha256": "60E8A0A56F8CC8A2753E4650C9BDA250C3F8C1EB00F2271F1C345A2254472B5E"
+    },
+    {
+      "path": "modern-install/000-deliverable2.tests.ps1",
+      "bytes": 2541,
+      "sha256": "F054DB446E44A61E62C0D1BC29617418CD7CD3F830F53E0C91BB0AAD6D8859F8"
+    },
+    {
+      "path": "modern-install/000-deliverable3.tests.ps1",
+      "bytes": 5335,
+      "sha256": "499D6E18EF65CD50BF8981B8A0C2983958E04742399DA1D399B60DC54A4C6E85"
+    },
+    {
+      "path": "modern-install/000-dependencies.ps1",
+      "bytes": 17182,
+      "sha256": "2AC41C819E5DC132079EB32058C10398D83149BD03BE25AB02AD3B7C3B5313FE"
+    },
+    {
+      "path": "modern-install/000-dependencies.tests.ps1",
+      "bytes": 10486,
+      "sha256": "2A0CDD482BCB90436342DD6A7C06E5C26181FABBF15CB13BC231B5A1FF6866D4"
+    },
+    {
+      "path": "modern-install/000-dependency-denial-matrix.tests.ps1",
+      "bytes": 4544,
+      "sha256": "2FBB5FC7FED22684AE6A446E34D33001BFFA2F7094F5F7946272CAA71866695D"
+    },
+    {
+      "path": "modern-install/000-dependency-denials.tests.ps1",
+      "bytes": 2378,
+      "sha256": "FB6D2005989BB6E33CB5432547FEA0F25F8749E5035A8ECDE3CB2D74C7A8E392"
+    },
+    {
+      "path": "modern-install/000-engine-integration.tests.ps1",
+      "bytes": 5712,
+      "sha256": "9D9FAA86ADD4F5043170C3CC4B7F4E31893B01A6BDDA3C1BBDF1AEF6B7C3E42B"
+    },
+    {
+      "path": "modern-install/000-engine-modes.tests.ps1",
+      "bytes": 11617,
+      "sha256": "B32B365A8021FCA52463E689A506B6FAB676F70749D92904CF8248F0EAED1E79"
+    },
+    {
+      "path": "modern-install/000-engine.ps1",
+      "bytes": 10960,
+      "sha256": "A0918C3B5C2AAB7BFC5C1C618482D79BE9F13B4E46EDBD68D9D4198E258CD6CD"
+    },
+    {
+      "path": "modern-install/000-entry-orchestration.tests.ps1",
+      "bytes": 14035,
+      "sha256": "CF324138969A97783DA671B390467EE253F8A78331B7B38B738ED78077200195"
+    },
+    {
+      "path": "modern-install/000-manifest-source-lock.tests.ps1",
+      "bytes": 2141,
+      "sha256": "137966DBA610102D6199FEB2C616F2ADC72A6697D29EE1E456F0B368CD7DDE99"
+    },
+    {
+      "path": "modern-install/000-manifest.ps1",
+      "bytes": 8574,
+      "sha256": "44C8337F266B851A9E4FEDF76DFCF4A8374ABF322E49A2A0EDB5DE9AECBEF6C9"
+    },
+    {
+      "path": "modern-install/000-manifest.tests.ps1",
+      "bytes": 12663,
+      "sha256": "E3EF85CADD63F67D12840DFA4A5C753F87B52793859B4B2B1D11EE87C0F789B1"
+    },
+    {
+      "path": "modern-install/000-mock-control.ps1",
+      "bytes": 3379,
+      "sha256": "87ABB8E3DC2C7EF7F2F2F762AF784E5E748679CE20AB8717EE94105DC1489CA6"
+    },
+    {
+      "path": "modern-install/000-orchestration.ps1",
+      "bytes": 48255,
+      "sha256": "FA55A06B6CF5E0A70EE04800B081EBEA9E8053CDC55950ED1C2886BF23E00594"
+    },
+    {
+      "path": "modern-install/000-orchestration.tests.ps1",
+      "bytes": 17876,
+      "sha256": "8523BB3B98DDBAB2F166139412167D8091B36E3B36A2E94B8E36AD2667F0A0E6"
+    },
+    {
+      "path": "modern-install/000-plan-entry.tests.ps1",
+      "bytes": 4818,
+      "sha256": "B6453585E13C54A9C4A444D84F37DDC5460F8C7C6B2F3B8C330D8327275A340F"
+    },
+    {
+      "path": "modern-install/000-plan-state-entry.tests.ps1",
+      "bytes": 6190,
+      "sha256": "3524FC4263E7F75C409FF23EDC7AD1CA040EB7D58035044D6FA2319BE29A3805"
+    },
+    {
+      "path": "modern-install/000-requirements.json",
+      "bytes": 1605,
+      "sha256": "ADB737BF337D61D051AB4B5398FCB836884EB1E9C6BA71249C6B5B7908726F11"
+    },
+    {
+      "path": "modern-install/000-review.ps1",
+      "bytes": 5357,
+      "sha256": "5CB73BF2F9111338FB4D7262B8258AB62A8F0FF2056E9D7F111D532C81A0A3BC"
+    },
+    {
+      "path": "modern-install/000-review.tests.ps1",
+      "bytes": 11247,
+      "sha256": "9239B2AAEC27A85DDDDD03C686F9E09D6D23179625419D191F4A65678C055BE4"
+    },
+    {
+      "path": "modern-install/000-run-all.bat",
+      "bytes": 3519,
+      "sha256": "FA82C954DCD892F276647BED45F6136F3272C29A09BC39FE016701BC093F58F4"
+    },
+    {
+      "path": "modern-install/000-runtime-state.tests.ps1",
+      "bytes": 12489,
+      "sha256": "6AA70AB2D410375029FE0BAACCA6FE36E81F14F2F13AE67500A055B1DE18C39F"
+    },
+    {
+      "path": "modern-install/000-state-binding.tests.ps1",
+      "bytes": 1797,
+      "sha256": "5AA431362E5E175AC71434F9F8C6B4A17D652AB99ED020BACA110BDD6AF683FF"
+    },
+    {
+      "path": "modern-install/000-state-store-binding.tests.ps1",
+      "bytes": 2560,
+      "sha256": "92BCDC5ECBD7000078A491E1E7ADC99679265856D2417C4005DBB20B850D2ED3"
+    },
+    {
+      "path": "modern-install/000-state-store-concurrency.tests.ps1",
+      "bytes": 13232,
+      "sha256": "BDF461808A60407DDC088BD49CCBEC8F2B035E264A8FD6DF4E5245556F4AF594"
+    },
+    {
+      "path": "modern-install/000-state-store-focused.tests.ps1",
+      "bytes": 3560,
+      "sha256": "05D0334CEB369E38E1313B613F7299B523FBAA022E4ABB0D6E42E94F36B294F6"
+    },
+    {
+      "path": "modern-install/000-state-store-reparse.tests.ps1",
+      "bytes": 4461,
+      "sha256": "8A0E800122EABBE15CDFAE656441825D99BFF1E6F34F95F5B94B3D6EB74641F8"
+    },
+    {
+      "path": "modern-install/000-state-store.ps1",
+      "bytes": 24538,
+      "sha256": "A0D1E6611AB2B722546812DE98E8B9EB9B35EA322C25E74114985D08D321F34E"
+    },
+    {
+      "path": "modern-install/000-state-store.tests.ps1",
+      "bytes": 14918,
+      "sha256": "AFE57197DE9EF805952FD83D772AF6C7F05D55CC3EA5950CE2A6C952BEE34467"
+    },
+    {
+      "path": "modern-install/000-state.ps1",
+      "bytes": 17930,
+      "sha256": "907D0CB14AADC46141544737D4FE0C65EE63DAB05AB5475C4F84627D1AA6B7E1"
+    },
+    {
+      "path": "modern-install/000-state.tests.ps1",
+      "bytes": 11147,
+      "sha256": "93E9CEE0739BF6F6600E1D8E63D98DB555F6C8A2B47666162CE12EBA1F87AA2B"
+    },
+    {
+      "path": "modern-install/010-preflight.bat",
+      "bytes": 2256,
+      "sha256": "78A5BE342D61E715B1AD1EC1B3753ED77CB95170E7C98B9A5313478B8183FAF8"
+    },
+    {
+      "path": "modern-install/010-preflight.ps1",
+      "bytes": 7464,
+      "sha256": "E8E81D21E3E7684D81D274FDE86783E7BE0A0819D39583BEACF2FDDD8CC8C2C7"
+    },
+    {
+      "path": "modern-install/010-requirements.json",
+      "bytes": 888,
+      "sha256": "A0B2D1D069BDC2C6679DDB2A1E97C98D35E53F139A013ED8C8DFE21BACFF988D"
+    },
+    {
+      "path": "modern-install/020-requirements.json",
+      "bytes": 1124,
+      "sha256": "57C2B22874315E42A77171ED7F9E6C61D6B24DAD57C440681E96746662F8106E"
+    },
+    {
+      "path": "modern-install/020-wsl-check.bat",
+      "bytes": 2219,
+      "sha256": "69209954D96136F987E9B9E6365C1C26CA50C2FD43186464565E0B41906375A7"
+    },
+    {
+      "path": "modern-install/020-wsl-check.ps1",
+      "bytes": 7303,
+      "sha256": "808ECC3DE90753FAAE384A388D857A64895CE8B25AD420A17B529EF4718A9695"
+    },
+    {
+      "path": "modern-install/030-create-distro.bat",
+      "bytes": 2844,
+      "sha256": "C60CB5E763D50D2EAB0B2AC6E399F1B285E04463F5980C21B545E9E56A7B8BF4"
+    },
+    {
+      "path": "modern-install/030-create-distro.ps1",
+      "bytes": 15144,
+      "sha256": "49B4E69F88B9088181302E531938F874683B00C3121272E5C5787A6BDE28331E"
+    },
+    {
+      "path": "modern-install/030-requirements.json",
+      "bytes": 1883,
+      "sha256": "AA3D650C80562B8A2B34A00956A7AE84CADA0D035B00EE0573F41CB01BF618DA"
+    },
+    {
+      "path": "modern-install/040-requirements.json",
+      "bytes": 2272,
+      "sha256": "233C9489F8878C210AF5CD418336C21821E885780392C0494E6A9A9138853328"
+    },
+    {
+      "path": "modern-install/040-wsl-conf.bat",
+      "bytes": 3203,
+      "sha256": "362ADFA04BA2A58A9FF7EC1521C0D69669D0DA504E9288B2EB0F6BE317434356"
+    },
+    {
+      "path": "modern-install/040-wsl-conf.ps1",
+      "bytes": 12472,
+      "sha256": "5DD4BEA41823617F5B7B46356C69E3F230CF04906CCA0AEADC8C799B8F2DF0BD"
+    },
+    {
+      "path": "modern-install/050-isolation-gate.bat",
+      "bytes": 3430,
+      "sha256": "66FC35B2A7A63E90B121261ED111A5A9EE36BF5289A9890B60D6EE598B676688"
+    },
+    {
+      "path": "modern-install/050-isolation-gate.ps1",
+      "bytes": 11484,
+      "sha256": "E523C89C44FE36E5D50B81A2F394560F2CA7EBA49F03F498B2A4097F390C2D48"
+    },
+    {
+      "path": "modern-install/050-requirements.json",
+      "bytes": 2009,
+      "sha256": "24EC423E0A2ADCA952DEB3A92309CC70BC2682E667A38D4B3FDB678F0E66ADAB"
+    },
+    {
+      "path": "modern-install/060-base-toolchain.bat",
+      "bytes": 3343,
+      "sha256": "02E729D75DBF9118277C9763DA92AA872D7669C3C258392CFE80D6124E27A46A"
+    },
+    {
+      "path": "modern-install/060-base-toolchain.ps1",
+      "bytes": 14510,
+      "sha256": "ED66B8DFFA8995E3A6C08100E21E1572FAB6623441712662BF2A80570A113261"
+    },
+    {
+      "path": "modern-install/060-requirements.json",
+      "bytes": 2966,
+      "sha256": "178ADD86A8EFC1A7704CFDCE38C1B521B06ECBAB85A2986B071024FB22CA431C"
+    },
+    {
+      "path": "modern-install/070-ai-jail.bat",
+      "bytes": 3468,
+      "sha256": "23D521A0E0B1875E09CBA8967C249B339C675AF8CDD6791F5C3A3D561D6B1AD4"
+    },
+    {
+      "path": "modern-install/070-ai-jail.ps1",
+      "bytes": 16314,
+      "sha256": "FEC4DC3ABB2D865C9F3A2CA330A11A59260E28C718306D7C396766A31E9E5D24"
+    },
+    {
+      "path": "modern-install/070-requirements.json",
+      "bytes": 3705,
+      "sha256": "8CDF9A4C13D71E5E997DF9939C78E5E175A90183AC20C8C56FCC2BE54CCF965F"
+    },
+    {
+      "path": "modern-install/080-requirements.json",
+      "bytes": 5117,
+      "sha256": "70ABF149EC8B0B31652DBA794C77BF4C7C2ED22997ECA9CBC393AF3E3AAC124C"
+    },
+    {
+      "path": "modern-install/080-setup-sandboxes.bat",
+      "bytes": 4597,
+      "sha256": "50BC4567B6613263907EBF9C190F5399EFA5F1AE6B7F60E71251099EF849ADB3"
+    },
+    {
+      "path": "modern-install/080-setup-sandboxes.ps1",
+      "bytes": 25794,
+      "sha256": "66E1167FB2FC4D13E752C082EF3C38F043D305B178B3FBFD213919F56AA04EBF"
+    },
+    {
+      "path": "modern-install/090-requirements.json",
+      "bytes": 5609,
+      "sha256": "E5FA4862BF80DA297861A0BDFB37362ABBC06223D880BFB59685A3A8078F41CE"
+    },
+    {
+      "path": "modern-install/090-setup-opencode.bat",
+      "bytes": 4765,
+      "sha256": "9BCD7F4E8C158BF223FEB51D757609269F7E09A46D2E92D86CD4067E145852C0"
+    },
+    {
+      "path": "modern-install/090-setup-opencode.ps1",
+      "bytes": 17349,
+      "sha256": "2F29FA5432D4DC5C1392B912EFD944D958A2AE51952C9E58661E811790E2C435"
+    },
+    {
+      "path": "modern-install/091-requirements.json",
+      "bytes": 3879,
+      "sha256": "2F6AFCD0EC4116205C9DBEC0BD397C80B75C2216A606EFB2329B3D2B92737C79"
+    },
+    {
+      "path": "modern-install/091-setup-opencode-plugins.bat",
+      "bytes": 5253,
+      "sha256": "22464453F7FF67A8BBA4177A04058758BE93134676B523546487705149F4B3DB"
+    },
+    {
+      "path": "modern-install/091-setup-opencode-plugins.ps1",
+      "bytes": 15645,
+      "sha256": "FF97BC5CE1939E4A359E785C87D09C13679A9E5AF7C563E63DEFD7E72F8120E6"
+    },
+    {
+      "path": "modern-install/092-check-gsd-source.bat",
+      "bytes": 5387,
+      "sha256": "72290E97B1EAC7103D5D85475146D1E18FE226965A82AA1B629583AD4B8903AD"
+    },
+    {
+      "path": "modern-install/092-check-gsd-source.ps1",
+      "bytes": 20848,
+      "sha256": "6BBCF3E1B425C361B1DD2561F6D75C3BB58F32CFFF2656D9B6F5885DC0374D8F"
+    },
+    {
+      "path": "modern-install/092-requirements.json",
+      "bytes": 8280,
+      "sha256": "2F2EF6E0C9401159A881DE5945877366D80C756307BBC7B41D1655BCB2DA953C"
+    },
+    {
+      "path": "modern-install/_common.bat",
+      "bytes": 10542,
+      "sha256": "E08BFAE777A7AB94A1D570C4BE268A3C11B2BFC691A2E6E4574691FABF554081"
+    },
+    {
+      "path": "modern-install/AI Jail Phase 000 — Exhaustive Implementation, Test, and Acceptance Report.md",
+      "bytes": 57379,
+      "sha256": "7D3E83B188B276A281928C2749B3D9DCB056B67317ACCE8D3092D8CF19D56008"
+    },
+    {
+      "path": "modern-install/AI JAIL — STRICT IMPLEMENTATION PLAN AND EXECUTION RULES.md",
+      "bytes": 39138,
+      "sha256": "B00E7737F769B50B3CBB9BD4A0DEEDD037C3B8D25C6A59CF37FD85CCFFF31081"
+    },
+    {
+      "path": "modern-install/config.env",
+      "bytes": 1382,
+      "sha256": "AFFC004DE57E1DFEDC5C12D850957904E1F2B9356B82DE856E33EFFE5FD4C0D5"
+    }
+  ]
+}
