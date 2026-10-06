@@ -1,0 +1,153 @@
+{
+  "snapshot_date": "2026-10-06",
+  "timezone": "Europe/London",
+  "source_root": "D:\\.coding\\.ai-jail\\modern-install",
+  "purpose": "Read-only snapshot for continuation. Not fresh runtime evidence, approval, or proof that tests passed.",
+  "files": [
+    {
+      "name": "000-config.ps1",
+      "sha256": "9D64840A56FC495BBBBBC820D8414802337F9D471FB8B3138CC299C62428D9E4",
+      "bytes": 9428
+    },
+    {
+      "name": "000-engine.ps1",
+      "sha256": "BC253AD228C44DEB0E616961EDA7C4C9E57A356A2C7C1063EE1F8F1C6FB15E44",
+      "bytes": 16842
+    },
+    {
+      "name": "000-run-all.bat",
+      "sha256": "6F9235CF3323FD081C85C614168ECB75F42976DAC0D710FC9E0D0EF9038B7C7C",
+      "bytes": 5190
+    },
+    {
+      "name": "_common.bat",
+      "sha256": "E08BFAE777A7AB94A1D570C4BE268A3C11B2BFC691A2E6E4574691FABF554081",
+      "bytes": 10542
+    },
+    {
+      "name": "000-authorization.ps1",
+      "sha256": "58ABB461CCECA705E786C04FD20B3BEEE4BE0829622089613D1A011376197A35",
+      "bytes": 24242
+    },
+    {
+      "name": "000-state.ps1",
+      "sha256": "907D0CB14AADC46141544737D4FE0C65EE63DAB05AB5475C4F84627D1AA6B7E1",
+      "bytes": 17930
+    },
+    {
+      "name": "000-state-store.ps1",
+      "sha256": "A0D1E6611AB2B722546812DE98E8B9EB9B35EA322C25E74114985D08D321F34E",
+      "bytes": 24538
+    },
+    {
+      "name": "000-manifest.ps1",
+      "sha256": "44C8337F266B851A9E4FEDF76DFCF4A8374ABF322E49A2A0EDB5DE9AECBEF6C9",
+      "bytes": 8574
+    },
+    {
+      "name": "000-dependencies.ps1",
+      "sha256": "2AC41C819E5DC132079EB32058C10398D83149BD03BE25AB02AD3B7C3B5313FE",
+      "bytes": 17182
+    },
+    {
+      "name": "000-orchestration.ps1",
+      "sha256": "FA55A06B6CF5E0A70EE04800B081EBEA9E8053CDC55950ED1C2886BF23E00594",
+      "bytes": 48255
+    },
+    {
+      "name": "000-requirements.json",
+      "sha256": "ADB737BF337D61D051AB4B5398FCB836884EB1E9C6BA71249C6B5B7908726F11",
+      "bytes": 1605
+    },
+    {
+      "name": "010-boundary.ps1",
+      "sha256": "181DFFC37522708F8F47CD4B0AAFDA817793A2C1212DA184C7B383F68A1501AB",
+      "bytes": 78368
+    },
+    {
+      "name": "010-preflight-core.ps1",
+      "sha256": "555DE565D9AFD94B66C36AE5695D8570AC57E47598D35584638C162B017ED211",
+      "bytes": 70201
+    },
+    {
+      "name": "010-preflight.ps1",
+      "sha256": "A69929FBA45473C838D27FF94512DF2780E56C46F763FACAD2BC9F7EFB577F86",
+      "bytes": 3761
+    },
+    {
+      "name": "010-preflight.bat",
+      "sha256": "678C04258384EAE4D147344AEC15D9444AD2664A7E5A77E0C804867F50753B9B",
+      "bytes": 2765
+    },
+    {
+      "name": "010-requirements.json",
+      "sha256": "F51883A750F5A53A2461D2123B81BA8ACB1E22001AF3C1C6DF9793C872FA5F73",
+      "bytes": 3713
+    },
+    {
+      "name": "010-warning-completion.tests.ps1",
+      "sha256": "20B34E8AF6C08BEAC2598C90BD0C76B347D77B58F52A9B2B491FF68CFDB645AD",
+      "bytes": 14282
+    },
+    {
+      "name": "010-engine-bootstrap.tests.ps1",
+      "sha256": "A04F5CF5EA338801DA410D3FFCE71ABF72AA2209F16CB5CA043E42E37F4608F5",
+      "bytes": 21003
+    },
+    {
+      "name": "010-preflight.tests.ps1",
+      "sha256": "6F2729D8758709B99F53F6F3508CCE33E21291D40BB4495A195D778D6868AF07",
+      "bytes": 40504
+    },
+    {
+      "name": "010-bound-execution.tests.ps1",
+      "sha256": "47547A0C41A4E1A3BEFE209032951240CBB143CF1474E7514DE948EE519D852A",
+      "bytes": 26964
+    },
+    {
+      "name": "000-deliverable3.tests.ps1",
+      "sha256": "499D6E18EF65CD50BF8981B8A0C2983958E04742399DA1D399B60DC54A4C6E85",
+      "bytes": 5335
+    },
+    {
+      "name": "020-verified-wsl-check.ps1",
+      "sha256": "6B34D9277DFCB6BE0BAFE6B850E19312A7CE89575613215FC65B0549DD9218BA",
+      "bytes": 1867
+    },
+    {
+      "name": "020-wsl-check.ps1",
+      "sha256": "808ECC3DE90753FAAE384A388D857A64895CE8B25AD420A17B529EF4718A9695",
+      "bytes": 7303
+    },
+    {
+      "name": "020-wsl-check.bat",
+      "sha256": "69209954D96136F987E9B9E6365C1C26CA50C2FD43186464565E0B41906375A7",
+      "bytes": 2219
+    },
+    {
+      "name": "020-requirements.json",
+      "sha256": "57C2B22874315E42A77171ED7F9E6C61D6B24DAD57C440681E96746662F8106E",
+      "bytes": 1124
+    },
+    {
+      "name": "030-create-distro.ps1",
+      "sha256": "49B4E69F88B9088181302E531938F874683B00C3121272E5C5787A6BDE28331E",
+      "bytes": 15144
+    },
+    {
+      "name": "030-create-distro.bat",
+      "sha256": "C60CB5E763D50D2EAB0B2AC6E399F1B285E04463F5980C21B545E9E56A7B8BF4",
+      "bytes": 2844
+    },
+    {
+      "name": "030-requirements.json",
+      "sha256": "AA3D650C80562B8A2B34A00956A7AE84CADA0D035B00EE0573F41CB01BF618DA",
+      "bytes": 1883
+    },
+    {
+      "name": "config.env",
+      "sha256": "6E44FD7FEA9DE0C8D79797247220723DA393B31A5AA4566FBB4566CF3623A434",
+      "bytes": 1381
+    }
+  ]
+}
